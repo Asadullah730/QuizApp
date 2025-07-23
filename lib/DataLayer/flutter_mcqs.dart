@@ -1,6 +1,6 @@
 import 'package:flashquiz/Model/flash_card_model.dart';
 
-List<Flashcard> flashcards = [
+List<Flashcard> fluttermcqs = [
   Flashcard(
     question: 'What is Flutter?',
     correctAnswer: 'A UI toolkit by Google for building apps.',

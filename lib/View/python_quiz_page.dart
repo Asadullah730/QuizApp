@@ -1,19 +1,24 @@
-import 'package:flashquiz/DataLayer/flutter_mcqs.dart';
+import 'package:flashquiz/DataLayer/python_mcqs.dart';
 import 'package:flashquiz/Model/flash_card_model.dart';
 import 'package:flashquiz/View/result.dart';
 import 'package:flutter/material.dart';
 
-class FlutterQuizPage extends StatefulWidget {
+class PythonQuizPage extends StatefulWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkTheme;
 
-  FlutterQuizPage({required this.onThemeToggle, required this.isDarkTheme});
+  const PythonQuizPage({
+    super.key,
+    required this.onThemeToggle,
+    required this.isDarkTheme,
+  });
 
   @override
-  _FlutterQuizPageState createState() => _FlutterQuizPageState();
+  // ignore: library_private_types_in_public_api
+  _PythonQuizPageState createState() => _PythonQuizPageState();
 }
 
-class _FlutterQuizPageState extends State<FlutterQuizPage> {
+class _PythonQuizPageState extends State<PythonQuizPage> {
   int currentIndex = 0;
   String? selectedOption;
   int score = 0;
@@ -23,7 +28,7 @@ class _FlutterQuizPageState extends State<FlutterQuizPage> {
   @override
   void initState() {
     super.initState();
-    quizCards = List<Flashcard>.from(fluttermcqs)..shuffle();
+    quizCards = List<Flashcard>.from(pythonmcqs)..shuffle();
     quizCards = quizCards.take(10).toList(); // limit to 10
   }
 
