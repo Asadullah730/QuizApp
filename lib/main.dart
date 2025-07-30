@@ -1,4 +1,6 @@
 import 'package:flashquiz/Model/flash_card_model.dart';
+import 'package:flashquiz/View/Splash/splashScreen.dart';
+import 'package:flashquiz/View/admin_panel/authpages/lgoin_page.dart';
 import 'package:flashquiz/View/home.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -29,10 +31,11 @@ class _QuizAppState extends State<QuizApp> {
         brightness: Brightness.dark,
         primarySwatch: Colors.deepPurple,
       ),
-      home: HomePage(
-        onThemeToggle: () => setState(() => isDarkTheme = !isDarkTheme),
-        isDarkTheme: isDarkTheme,
-      ),
+      // home: HomePage(
+      //   onThemeToggle: () => setState(() => isDarkTheme = !isDarkTheme),
+      //   isDarkTheme: isDarkTheme,
+      // ),
+      home: SplashScreen(),
     );
   }
 }
