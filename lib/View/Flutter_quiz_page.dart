@@ -20,6 +20,150 @@ class _FlutterQuizPageState extends State<FlutterQuizPage> {
   bool showCorrectAnswer = false;
   List<Flashcard> quizCards = [];
 
+  void _addFlashcard() {
+    TextEditingController questionCtrl = TextEditingController();
+    TextEditingController correctCtrl = TextEditingController();
+    List<TextEditingController> optionCtrls = List.generate(
+      4,
+      (_) => TextEditingController(),
+    );
+
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Add Flashcard"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: questionCtrl,
+                    decoration: const InputDecoration(labelText: "Question"),
+                  ),
+                  TextField(
+                    controller: correctCtrl,
+                    decoration: const InputDecoration(
+                      labelText: "Correct Answer",
+                    ),
+                  ),
+                  ...List.generate(
+                    4,
+                    (i) => TextField(
+                      controller: optionCtrls[i],
+                      decoration: InputDecoration(labelText: "Option ${i + 1}"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    quizCards.add(
+                      Flashcard(
+                        question: questionCtrl.text,
+                        correctAnswer: correctCtrl.text,
+                        options: optionCtrls.map((e) => e.text).toList(),
+                      ),
+                    );
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text("Add"),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _editFlashcard() {
+    if (quizCards.isEmpty) return;
+
+    Flashcard current = quizCards[currentIndex];
+    TextEditingController questionCtrl = TextEditingController(
+      text: current.question,
+    );
+    TextEditingController correctCtrl = TextEditingController(
+      text: current.correctAnswer,
+    );
+    List<TextEditingController> optionCtrls =
+        current.options.map((opt) => TextEditingController(text: opt)).toList();
+
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Edit Flashcard"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: questionCtrl,
+                    decoration: const InputDecoration(labelText: "Question"),
+                  ),
+                  TextField(
+                    controller: correctCtrl,
+                    decoration: const InputDecoration(
+                      labelText: "Correct Answer",
+                    ),
+                  ),
+                  ...List.generate(
+                    4,
+                    (i) => TextField(
+                      controller: optionCtrls[i],
+                      decoration: InputDecoration(labelText: "Option ${i + 1}"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    quizCards[currentIndex] = Flashcard(
+                      question: questionCtrl.text,
+                      correctAnswer: correctCtrl.text,
+                      options: optionCtrls.map((e) => e.text).toList(),
+                    );
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text("Update"),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _deleteFlashcard() {
+    if (quizCards.isEmpty) return;
+    setState(() {
+      quizCards.removeAt(currentIndex);
+      if (currentIndex >= quizCards.length) {
+        currentIndex = quizCards.length - 1;
+      }
+    });
+  }
+
+  void _resetQuiz() {
+    setState(() {
+      currentIndex = 0;
+      selectedOption = null;
+      score = 0;
+      showCorrectAnswer = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -102,34 +246,29 @@ class _FlutterQuizPageState extends State<FlutterQuizPage> {
             children: [
               // Top Controls
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Flutter Quiz',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle_outline, color: Colors.green),
+                    tooltip: 'Add Flashcard',
+                    onPressed: _addFlashcard,
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.brightness_6,
-                          color: Colors.deepPurple,
-                        ),
-                        onPressed: widget.onThemeToggle,
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.info_outline,
-                          color: Colors.deepPurple,
-                        ),
-                        onPressed:
-                            () => setState(() => showCorrectAnswer = true),
-                      ),
-                    ],
+                  IconButton(
+                    icon: Icon(Icons.edit_note, color: Colors.orange),
+                    tooltip: 'Edit Flashcard',
+                    onPressed: _editFlashcard,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete_outline, color: Colors.red),
+                    tooltip: 'Delete Flashcard',
+                    onPressed: _deleteFlashcard,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.brightness_6, color: Colors.deepPurple),
+                    onPressed: widget.onThemeToggle,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.info_outline, color: Colors.deepPurple),
+                    onPressed: () => setState(() => showCorrectAnswer = true),
                   ),
                 ],
               ),
@@ -158,7 +297,7 @@ class _FlutterQuizPageState extends State<FlutterQuizPage> {
                 minHeight: 8,
               ),
 
-              SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.07),
 
               // Question Card
               Card(
@@ -181,14 +320,14 @@ class _FlutterQuizPageState extends State<FlutterQuizPage> {
                 ),
               ),
 
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.03),
 
               // Options
               ...card.options.map(
                 (opt) => _buildOption(opt, card.correctAnswer),
               ),
 
-              SizedBox(height: 30),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.01),
 
               // Next/Finish Button
               ElevatedButton.icon(
